@@ -248,7 +248,7 @@ function getData(){
   return d?JSON.parse(d):{type:'flower',themeMonth:'',practiceLog:{},collectionLog:{},lastPractice:null,streak:0,totalMinutes:0};
 }
 function save(d){localStorage.setItem('piano_v6',JSON.stringify(d));}
-function today(){return new Date().toISOString().slice(0,10);}
+function today(){const n=new Date();return `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}-${String(n.getDate()).padStart(2,'0')}`;}
 function thisMonth(){const n=new Date();return `${n.getFullYear()}-${String(n.getMonth()+1).padStart(2,'0')}`;}
 
 let D=getData(), curType=D.type||'flower';
@@ -314,7 +314,7 @@ function renderWeekGrid(){
   let weekDone=0;
   for(let i=0;i<7;i++){
     const d=new Date(now);d.setDate(now.getDate()-(dow-i));
-    const key=d.toISOString().slice(0,10),isToday=i===dow,done=!!log[key];
+    const key=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`,isToday=i===dow,done=!!log[key];
     if(done&&d<=now) weekDone++;
     // その日のキャラを表示
     const col=D.collectionLog||{};
@@ -401,10 +401,9 @@ function renderCollection(){
   const colLog=D.collectionLog||{};
   const now=new Date(),yr=now.getFullYear(),mo=now.getMonth();
 
-  // 今月のコレクション
-  const monthItems=Object.entries(colLog).filter(([key])=>{
-    const d=new Date(key);return d.getFullYear()===yr&&d.getMonth()===mo;
-  }).map(([,v])=>v);
+  // 今月のコレクション（タイムゾーンずれ防止のため文字列で比較）
+  const ymStr=`${yr}-${String(mo+1).padStart(2,'0')}`;
+  const monthItems=Object.entries(colLog).filter(([key])=>key.startsWith(ymStr)).map(([,v])=>v);
 
   document.getElementById('col-title').textContent=scene.name;
   document.getElementById('col-sub').textContent=`れんしゅうするたびにキャラクターがもらえるよ！`;
