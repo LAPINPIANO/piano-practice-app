@@ -212,22 +212,22 @@ const CHARS = {
   flower:{
     normal:[ {e:'🌸',n:'さくら'},{e:'🌼',n:'ひまわり'},{e:'🌹',n:'ばら'},{e:'🌷',n:'チューリップ'},{e:'🌻',n:'たんぽぽ'},{e:'🌾',n:'コスモス'} ],
     rare:  [ {e:'🪷',n:'はすのはな'},{e:'🌺',n:'ハイビスカス'},{e:'🏵️',n:'かんむりばな'} ],
-    super: [ {e:'🌈',n:'にじのはな'},{e:'💫',n:'ほしのはな'},{e:'💎',n:'ダイヤのはな'} ]
+    super: [ {e:'🏆',n:'トロフィー'},{e:'🏆',n:'トロフィー'},{e:'🏆',n:'トロフィー'} ]
   },
   animal:{
     normal:[ {e:'🐱',n:'ねこ'},{e:'🐶',n:'いぬ'},{e:'🐰',n:'うさぎ'},{e:'🐸',n:'かえる'},{e:'🐹',n:'ハムスター'},{e:'🐧',n:'ペンギン'} ],
     rare:  [ {e:'🦊',n:'きつね'},{e:'🐼',n:'パンダ'},{e:'🦁',n:'ライオン'} ],
-    super: [ {e:'🦄',n:'ユニコーン'},{e:'🐉',n:'ドラゴン'},{e:'👑',n:'おうさまライオン'} ]
+    super: [ {e:'🏆',n:'トロフィー'},{e:'🏆',n:'トロフィー'},{e:'🏆',n:'トロフィー'} ]
   },
   veggie:{
     normal:[ {e:'🥕',n:'にんじん'},{e:'🥦',n:'ブロッコリー'},{e:'🌽',n:'とうもろこし'},{e:'🍅',n:'トマト'},{e:'🥬',n:'レタス'},{e:'🥒',n:'きゅうり'} ],
     rare:  [ {e:'🫑',n:'カラーピーマン'},{e:'🍆',n:'なす'},{e:'🥑',n:'アボカド'} ],
-    super: [ {e:'🌈',n:'にじサラダ'},{e:'💫',n:'ほしにんじん'},{e:'💎',n:'ダイヤやさい'} ]
+    super: [ {e:'🏆',n:'トロフィー'},{e:'🏆',n:'トロフィー'},{e:'🏆',n:'トロフィー'} ]
   },
   ocean:{
     normal:[ {e:'🐠',n:'クマノミ'},{e:'🐟',n:'さかな'},{e:'🦐',n:'えび'},{e:'🐚',n:'かい'},{e:'🫧',n:'あわ'},{e:'🐡',n:'ふぐ'} ],
     rare:  [ {e:'🐬',n:'イルカ'},{e:'🦑',n:'イカ'},{e:'🐙',n:'タコ'} ],
-    super: [ {e:'🐋',n:'クジラ'},{e:'🦈',n:'サメ'},{e:'👑',n:'おうさまさかな'} ]
+    super: [ {e:'🏆',n:'トロフィー'},{e:'🏆',n:'トロフィー'},{e:'🏆',n:'トロフィー'} ]
   }
 };
 
@@ -434,8 +434,11 @@ function renderCollection(){
     box.innerHTML=`<div style="text-align:center;padding:20px 0;color:${curType==='ocean'?'rgba(200,230,255,.8)':'#9B7FA6'};font-size:12px;line-height:1.8;">れんしゅうするとキャラクターがもらえるよ！<br>🎹 がんばってね！</div>`;
   } else {
     box.innerHTML=monthItems.map(item=>{
-      const border=item.rarity==='super'?'2px solid gold':item.rarity==='rare'?'2px solid #FFD166':'none';
-      return `<span class="scene-item" title="${item.name}" style="border:${border};border-radius:50%;padding:2px;">${item.emoji}</span>`;
+      const isSuper=item.rarity==='super';
+      const isRare=item.rarity==='rare';
+      const border=isSuper?'2px solid gold':isRare?'2px solid #FFD166':'none';
+      const size=isSuper?'38px':isRare?'30px':'26px';
+      return `<span class="scene-item" title="${item.name}" style="font-size:${size};border:${border};border-radius:50%;padding:2px;">${item.emoji}</span>`;
     }).join('');
   }
 
