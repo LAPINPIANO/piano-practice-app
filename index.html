@@ -165,20 +165,18 @@ body{font-family:'Zen Maru Gothic',sans-serif;background:var(--bg);min-height:10
       <p id="col-sub">れんしゅうするたびにキャラクターがもらえるよ！</p>
     </div>
 
+    <!-- レアリティ説明 -->
+    <div class="rarity-legend">
+      <div class="rarity-legend-title">🎯 キャラクターのレアリティ</div>
+      <div id="rarity-legend-content"></div>
+    </div>
+
     <div class="scene-card">
       <div class="scene-title">
         <span id="col-scene-name">🌸 今月のコレクション</span>
         <span class="scene-count" id="col-count">0こ</span>
       </div>
       <div class="scene-box" id="col-scene-box"></div>
-    </div>
-
-    <!-- レアリティ説明 -->
-    <div class="rarity-legend">
-      <div class="rarity-legend-title">🎯 キャラクターのレアリティ</div>
-      <div class="rarity-row"><span class="rarity-badge badge-normal">ふつう</span>10分未満でもらえる</div>
-      <div class="rarity-row"><span class="rarity-badge badge-rare">✨ レア</span>20分以上でもらえる</div>
-      <div class="rarity-row"><span class="rarity-badge badge-super">💎 スーパーレア</span>30分以上でもらえる</div>
     </div>
 
     <!-- 月カレンダー -->
@@ -214,22 +212,22 @@ const CHARS = {
   flower:{
     normal:[ {e:'🌸',n:'さくら'},{e:'🌼',n:'ひまわり'},{e:'🌹',n:'ばら'},{e:'🌷',n:'チューリップ'},{e:'🌻',n:'たんぽぽ'},{e:'🌾',n:'コスモス'} ],
     rare:  [ {e:'🪷',n:'はすのはな'},{e:'🌺',n:'ハイビスカス'},{e:'🏵️',n:'かんむりばな'} ],
-    super: [ {e:'🌈🌸',n:'にじのはな'},{e:'⭐🌸',n:'ほしのはな'},{e:'💎🌸',n:'ダイヤのはな'} ]
+    super: [ {e:'🌈',n:'にじのはな'},{e:'💫',n:'ほしのはな'},{e:'💎',n:'ダイヤのはな'} ]
   },
   animal:{
     normal:[ {e:'🐱',n:'ねこ'},{e:'🐶',n:'いぬ'},{e:'🐰',n:'うさぎ'},{e:'🐸',n:'かえる'},{e:'🐹',n:'ハムスター'},{e:'🐧',n:'ペンギン'} ],
     rare:  [ {e:'🦊',n:'きつね'},{e:'🐼',n:'パンダ'},{e:'🦁',n:'ライオン'} ],
-    super: [ {e:'🦄',n:'ユニコーン'},{e:'🐉',n:'ドラゴン'},{e:'👑🦁',n:'おうさまライオン'} ]
+    super: [ {e:'🦄',n:'ユニコーン'},{e:'🐉',n:'ドラゴン'},{e:'👑',n:'おうさまライオン'} ]
   },
   veggie:{
     normal:[ {e:'🥕',n:'にんじん'},{e:'🥦',n:'ブロッコリー'},{e:'🌽',n:'とうもろこし'},{e:'🍅',n:'トマト'},{e:'🥬',n:'レタス'},{e:'🥒',n:'きゅうり'} ],
     rare:  [ {e:'🫑',n:'カラーピーマン'},{e:'🍆',n:'なす'},{e:'🥑',n:'アボカド'} ],
-    super: [ {e:'🌈🥗',n:'にじサラダ'},{e:'⭐🥕',n:'ほしにんじん'},{e:'💎🥦',n:'ダイヤやさい'} ]
+    super: [ {e:'🌈',n:'にじサラダ'},{e:'💫',n:'ほしにんじん'},{e:'💎',n:'ダイヤやさい'} ]
   },
   ocean:{
     normal:[ {e:'🐠',n:'クマノミ'},{e:'🐟',n:'さかな'},{e:'🦐',n:'えび'},{e:'🐚',n:'かい'},{e:'🫧',n:'あわ'},{e:'🐡',n:'ふぐ'} ],
     rare:  [ {e:'🐬',n:'イルカ'},{e:'🦑',n:'イカ'},{e:'🐙',n:'タコ'} ],
-    super: [ {e:'🐋',n:'クジラ'},{e:'🦈',n:'サメ'},{e:'👑🐠',n:'おうさまさかな'} ]
+    super: [ {e:'🐋',n:'クジラ'},{e:'🦈',n:'サメ'},{e:'👑',n:'おうさまさかな'} ]
   }
 };
 
@@ -409,6 +407,26 @@ function renderCollection(){
   document.getElementById('col-sub').textContent=`れんしゅうするたびにキャラクターがもらえるよ！`;
   document.getElementById('col-scene-name').textContent=`${ct.emoji} 今月のコレクション`;
   document.getElementById('col-count').textContent=`${monthItems.length}こ`;
+
+  // レアリティ説明をテーマに合わせて更新
+  const chars=CHARS[curType];
+  const legendEl=document.getElementById('rarity-legend-content');
+  legendEl.innerHTML=`
+    <div class="rarity-row">
+      <span class="rarity-badge badge-normal">ふつう</span>
+      <span style="font-size:12px;">10分未満</span>
+      <span style="font-size:20px;margin-left:4px;">${chars.normal.map(c=>c.e).join('')}</span>
+    </div>
+    <div class="rarity-row">
+      <span class="rarity-badge badge-rare">✨ レア</span>
+      <span style="font-size:12px;">20分以上</span>
+      <span style="font-size:20px;margin-left:4px;">${chars.rare.map(c=>c.e).join('')}</span>
+    </div>
+    <div class="rarity-row">
+      <span class="rarity-badge badge-super">💎 スーパーレア</span>
+      <span style="font-size:12px;">30分以上</span>
+      <span style="font-size:20px;margin-left:4px;">${chars.super.map(c=>c.e).join('')}</span>
+    </div>`;
 
   const box=document.getElementById('col-scene-box');
   box.style.background=scene.bg;
