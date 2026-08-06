@@ -165,6 +165,9 @@ body{font-family:'Zen Maru Gothic',sans-serif;background:var(--bg);min-height:10
       <p id="col-sub">れんしゅうするたびにキャラクターがもらえるよ！</p>
     </div>
 
+    <!-- 月タブ -->
+    <div class="month-tabs" id="col-month-tabs" style="display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;margin-bottom:14px;scrollbar-width:none;"></div>
+
     <!-- レアリティ説明 -->
     <div class="rarity-legend">
       <div class="rarity-legend-title">🎯 キャラクターのレアリティ</div>
@@ -393,22 +396,47 @@ function makeConfetti(rarity){
 }
 
 // ===== COLLECTION =====
+let colViewMonth=null; // null = 今月
+
 function renderCollection(){
   D=getData();curType=D.type||'flower';
   const ct=TYPES[curType],scene=ct.scene;
   const colLog=D.collectionLog||{};
-  const now=new Date(),yr=now.getFullYear(),mo=now.getMonth();
+  const now=new Date();
 
-  // 今月のコレクション（タイムゾーンずれ防止のため文字列で比較）
-  const ymStr=`${yr}-${String(mo+1).padStart(2,'0')}`;
+  // 月タブを生成（過去6ヶ月）
+  const tabs=document.getElementById('col-month-tabs');
+  tabs.innerHTML='';
+  const monthOptions=[];
+  for(let i=0;i<6;i++){
+    const d=new Date(now.getFullYear(),now.getMonth()-i,1);
+    const ym=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+    const label=i===0?'今月':d.toLocaleDateString('ja-JP',{month:'long'});
+    monthOptions.push({ym,label});
+  }
+  if(colViewMonth===null) colViewMonth=monthOptions[0].ym;
+
+  monthOptions.forEach(({ym,label})=>{
+    const btn=document.createElement('button');
+    btn.style.cssText=`flex-shrink:0;border:2px solid ${ym===colViewMonth?'var(--pink)':'#F0E0F0'};background:${ym===colViewMonth?'var(--pink-soft)':'white'};border-radius:20px;padding:6px 14px;font-size:12px;font-weight:700;color:${ym===colViewMonth?'var(--pink)':'var(--text-soft)'};cursor:pointer;font-family:'Zen Maru Gothic',sans-serif;`;
+    btn.textContent=label;
+    btn.onclick=()=>{colViewMonth=ym;renderCollection();};
+    tabs.appendChild(btn);
+  });
+
+  // 選択中の月のデータ
+  const ymStr=colViewMonth;
+  const [selYr,selMo]=ymStr.split('-').map(Number);
   const monthItems=Object.entries(colLog).filter(([key])=>key.startsWith(ymStr)).map(([,v])=>v);
+  const isCurrentMonth=ymStr===`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}`;
+  const monthLabel=new Date(selYr,selMo-1,1).toLocaleDateString('ja-JP',{year:'numeric',month:'long'});
 
   document.getElementById('col-title').textContent=scene.name;
   document.getElementById('col-sub').textContent=`れんしゅうするたびにキャラクターがもらえるよ！`;
-  document.getElementById('col-scene-name').textContent=`${ct.emoji} 今月のコレクション`;
+  document.getElementById('col-scene-name').textContent=`${ct.emoji} ${monthLabel}のコレクション`;
   document.getElementById('col-count').textContent=`${monthItems.length}こ`;
 
-  // レアリティ説明をテーマに合わせて更新
+  // レアリティ説明
   const chars=CHARS[curType];
   const legendEl=document.getElementById('rarity-legend-content');
   legendEl.innerHTML=`
@@ -431,7 +459,7 @@ function renderCollection(){
   const box=document.getElementById('col-scene-box');
   box.style.background=scene.bg;
   if(monthItems.length===0){
-    box.innerHTML=`<div style="text-align:center;padding:20px 0;color:${curType==='ocean'?'rgba(200,230,255,.8)':'#9B7FA6'};font-size:12px;line-height:1.8;">れんしゅうするとキャラクターがもらえるよ！<br>🎹 がんばってね！</div>`;
+    box.innerHTML=`<div style="text-align:center;padding:20px 0;color:${curType==='ocean'?'rgba(200,230,255,.8)':'#9B7FA6'};font-size:12px;line-height:1.8;">${isCurrentMonth?'れんしゅうするとキャラクターがもらえるよ！<br>🎹 がんばってね！':'この月のコレクションはまだないよ'}</div>`;
   } else {
     box.innerHTML=monthItems.map(item=>{
       const isSuper=item.rarity==='super';
@@ -443,18 +471,17 @@ function renderCollection(){
   }
 
   // 月カレンダー
-  const monthLabel=now.toLocaleDateString('ja-JP',{year:'numeric',month:'long'});
   document.getElementById('cal-month-label').textContent=monthLabel;
   document.getElementById('cal-month-count').textContent=`${monthItems.length}かい`;
 
-  const daysInMonth=new Date(yr,mo+1,0).getDate();
-  const firstDow=new Date(yr,mo,1).getDay();
+  const daysInMonth=new Date(selYr,selMo,0).getDate();
+  const firstDow=new Date(selYr,selMo-1,1).getDay();
   const grid=document.getElementById('cal-grid');
   grid.innerHTML='';
   ['日','月','火','水','木','金','土'].forEach(d=>{const l=document.createElement('div');l.className='cal-day-lbl';l.textContent=d;grid.appendChild(l);});
   for(let i=0;i<firstDow;i++) grid.appendChild(document.createElement('div'));
   for(let d=1;d<=daysInMonth;d++){
-    const key=`${yr}-${String(mo+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const key=`${selYr}-${String(selMo).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
     const item=colLog[key],isToday=key===today();
     const cell=document.createElement('div');
     cell.className=`cal-day ${item?'done':''} ${isToday?'today-mark':''}`;
